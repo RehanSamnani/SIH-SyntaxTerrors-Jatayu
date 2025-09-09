@@ -1,0 +1,53 @@
+[Unit]
+Description=Drone Telemetry Aggregator Service
+Documentation=https://github.com/your-repo/sih-project
+After=network.target mosquitto.service
+Wants=mosquitto.service
+Requires=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/sih
+Environment=PYTHONPATH=/home/pi/sih/src
+Environment=DEVICE_ID=pi-drone-01
+Environment=MQTT_HOST=localhost
+Environment=MQTT_PORT=1883
+Environment=TELEMETRY_LOG_PATH=/home/pi/drone/telemetry/telemetry.log
+Environment=TELEMETRY_INTERVAL=1.0
+Environment=MAX_LOG_PACKETS=500
+Environment=MAX_LOG_SIZE_MB=10
+
+# Load MQTT credentials if available
+EnvironmentFile=-/home/pi/.env.mqtt
+
+# Python virtual environment
+ExecStart=/home/pi/sih/.venv/bin/python /home/pi/sih/src/telemetry_service.py
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/pi/drone/telemetry /home/pi/drone/logs
+
+# Resource limits
+LimitNOFILE=1024
+MemoryMax=256M
+CPUQuota=50%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=telemetry-service
+
+[Install]
+WantedBy=multi-user.target

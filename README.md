@@ -103,6 +103,26 @@ git clone <this-repo> ~/sih
 cd ~/sih
 bash scripts/bootstrap.sh
 ```
+### Phase 2 — Telemetry Aggregator & Local Messaging
 
+Goal: merge GPS and IMU outputs into a unified telemetry stream and publish locally over MQTT.
+
+Deliverables:
+- Telemetry service (`src/telemetry_service.py`) publishing `drone/<id>/telemetry` at 1 Hz
+- Local Mosquitto broker setup (`scripts/setup_mqtt_broker.sh`)
+- Systemd unit (`scripts/telemetry.service`) and installer (`scripts/install_telemetry_service.sh`)
+- Test and monitor tools: `scripts/test_telemetry.py`, `scripts/monitor_telemetry.py`, `scripts/validate_phase2.py`
+
+Docs:
+- Detailed: see `docs/phase2_telemetry.md`
+- Quickstart: see `docs/phase2_quickstart.md`
+- Review: see `docs/features/2_REVIEW.md`
+
+Quick test:
+```bash
+bash scripts/setup_mqtt_broker.sh
+python src/telemetry_service.py --dry-run
+python scripts/monitor_telemetry.py
+```
 
 

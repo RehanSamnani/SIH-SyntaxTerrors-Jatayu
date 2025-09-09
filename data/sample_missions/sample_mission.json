@@ -1,0 +1,132 @@
+{
+  "mission_id": "disaster_relief_001",
+  "name": "Disaster Relief Supply Drop",
+  "description": "Deliver emergency supplies to three locations in disaster zone",
+  "default_altitude": 50.0,
+  "max_speed": 5.0,
+  "payload_metadata": {
+    "type": "emergency_supplies",
+    "weight_kg": 2.5,
+    "contents": ["water", "food", "medical_supplies"],
+    "priority": "high",
+    "recipient": "disaster_zone_alpha"
+  },
+  "waypoints": [
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 0.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Launch Point",
+        "description": "Starting position"
+      }
+    },
+    {
+      "lat": 37.7750,
+      "lon": -122.4195,
+      "alt": 50.0,
+      "hold_seconds": 5.0,
+      "action": "none",
+      "metadata": {
+        "name": "Takeoff Altitude",
+        "description": "Reach mission altitude"
+      }
+    },
+    {
+      "lat": 37.7800,
+      "lon": -122.4200,
+      "alt": 50.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Waypoint 1",
+        "description": "Navigation point"
+      }
+    },
+    {
+      "lat": 37.7850,
+      "lon": -122.4250,
+      "alt": 50.0,
+      "hold_seconds": 10.0,
+      "action": "deliver",
+      "metadata": {
+        "name": "Drop Zone Alpha",
+        "description": "Emergency supply drop location 1",
+        "drop_zone_id": "alpha",
+        "expected_recipients": 5
+      }
+    },
+    {
+      "lat": 37.7900,
+      "lon": -122.4300,
+      "alt": 50.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Waypoint 2",
+        "description": "Navigation point"
+      }
+    },
+    {
+      "lat": 37.7950,
+      "lon": -122.4350,
+      "alt": 50.0,
+      "hold_seconds": 10.0,
+      "action": "deliver",
+      "metadata": {
+        "name": "Drop Zone Beta",
+        "description": "Emergency supply drop location 2",
+        "drop_zone_id": "beta",
+        "expected_recipients": 3
+      }
+    },
+    {
+      "lat": 37.8000,
+      "lon": -122.4400,
+      "alt": 50.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Waypoint 3",
+        "description": "Navigation point"
+      }
+    },
+    {
+      "lat": 37.8050,
+      "lon": -122.4450,
+      "alt": 50.0,
+      "hold_seconds": 10.0,
+      "action": "deliver",
+      "metadata": {
+        "name": "Drop Zone Gamma",
+        "description": "Emergency supply drop location 3",
+        "drop_zone_id": "gamma",
+        "expected_recipients": 7
+      }
+    },
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 50.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Return Path",
+        "description": "Return to launch point"
+      }
+    },
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 0.0,
+      "hold_seconds": 5.0,
+      "action": "land",
+      "metadata": {
+        "name": "Landing Zone",
+        "description": "Mission complete - landing"
+      }
+    }
+  ]
+}

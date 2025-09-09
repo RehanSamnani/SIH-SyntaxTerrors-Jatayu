@@ -1,0 +1,168 @@
+{
+  "mission_id": "aerial_survey_001",
+  "name": "Aerial Survey Mission",
+  "description": "Photographic survey of disaster zone for damage assessment",
+  "default_altitude": 75.0,
+  "max_speed": 3.0,
+  "payload_metadata": {
+    "type": "camera_survey",
+    "equipment": ["high_res_camera", "gimbal"],
+    "survey_type": "damage_assessment",
+    "area_coverage": "2km_square"
+  },
+  "waypoints": [
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 0.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Launch Point",
+        "description": "Starting position"
+      }
+    },
+    {
+      "lat": 37.7750,
+      "lon": -122.4195,
+      "alt": 75.0,
+      "hold_seconds": 5.0,
+      "action": "none",
+      "metadata": {
+        "name": "Survey Altitude",
+        "description": "Reach survey altitude"
+      }
+    },
+    {
+      "lat": 37.7800,
+      "lon": -122.4200,
+      "alt": 75.0,
+      "hold_seconds": 15.0,
+      "action": "photo",
+      "metadata": {
+        "name": "Survey Point 1",
+        "description": "Northwest corner survey",
+        "photo_count": 5,
+        "overlap_percent": 80
+      }
+    },
+    {
+      "lat": 37.7850,
+      "lon": -122.4200,
+      "alt": 75.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Transit 1",
+        "description": "Move to next survey point"
+      }
+    },
+    {
+      "lat": 37.7900,
+      "lon": -122.4200,
+      "alt": 75.0,
+      "hold_seconds": 15.0,
+      "action": "photo",
+      "metadata": {
+        "name": "Survey Point 2",
+        "description": "North survey",
+        "photo_count": 5,
+        "overlap_percent": 80
+      }
+    },
+    {
+      "lat": 37.7900,
+      "lon": -122.4250,
+      "alt": 75.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Transit 2",
+        "description": "Move to next survey point"
+      }
+    },
+    {
+      "lat": 37.7900,
+      "lon": -122.4300,
+      "alt": 75.0,
+      "hold_seconds": 15.0,
+      "action": "photo",
+      "metadata": {
+        "name": "Survey Point 3",
+        "description": "Northeast survey",
+        "photo_count": 5,
+        "overlap_percent": 80
+      }
+    },
+    {
+      "lat": 37.7850,
+      "lon": -122.4300,
+      "alt": 75.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Transit 3",
+        "description": "Move to next survey point"
+      }
+    },
+    {
+      "lat": 37.7800,
+      "lon": -122.4300,
+      "alt": 75.0,
+      "hold_seconds": 15.0,
+      "action": "photo",
+      "metadata": {
+        "name": "Survey Point 4",
+        "description": "East survey",
+        "photo_count": 5,
+        "overlap_percent": 80
+      }
+    },
+    {
+      "lat": 37.7800,
+      "lon": -122.4250,
+      "alt": 75.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Transit 4",
+        "description": "Move to center survey point"
+      }
+    },
+    {
+      "lat": 37.7850,
+      "lon": -122.4250,
+      "alt": 75.0,
+      "hold_seconds": 20.0,
+      "action": "photo",
+      "metadata": {
+        "name": "Survey Point 5",
+        "description": "Center detailed survey",
+        "photo_count": 10,
+        "overlap_percent": 90
+      }
+    },
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 75.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Return Path",
+        "description": "Return to launch point"
+      }
+    },
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 0.0,
+      "hold_seconds": 5.0,
+      "action": "land",
+      "metadata": {
+        "name": "Landing Zone",
+        "description": "Survey complete - landing"
+      }
+    }
+  ]
+}

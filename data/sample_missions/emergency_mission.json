@@ -1,0 +1,86 @@
+{
+  "mission_id": "emergency_response_001",
+  "name": "Emergency Response Mission",
+  "description": "Rapid response to emergency situation with medical supplies",
+  "default_altitude": 30.0,
+  "max_speed": 8.0,
+  "payload_metadata": {
+    "type": "medical_emergency",
+    "weight_kg": 1.0,
+    "contents": ["defibrillator", "medication", "first_aid"],
+    "priority": "critical",
+    "recipient": "emergency_responder_team",
+    "expiry_time": "2024-01-01T12:00:00Z"
+  },
+  "waypoints": [
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 0.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Emergency Base",
+        "description": "Emergency response base"
+      }
+    },
+    {
+      "lat": 37.7750,
+      "lon": -122.4195,
+      "alt": 30.0,
+      "hold_seconds": 2.0,
+      "action": "none",
+      "metadata": {
+        "name": "Emergency Altitude",
+        "description": "Rapid climb to mission altitude"
+      }
+    },
+    {
+      "lat": 37.8000,
+      "lon": -122.4500,
+      "alt": 30.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Emergency Transit",
+        "description": "Direct route to emergency location"
+      }
+    },
+    {
+      "lat": 37.8050,
+      "lon": -122.4550,
+      "alt": 30.0,
+      "hold_seconds": 5.0,
+      "action": "deliver",
+      "metadata": {
+        "name": "Emergency Drop Zone",
+        "description": "Critical medical supply delivery",
+        "drop_zone_id": "emergency_alpha",
+        "emergency_code": "MED-001",
+        "contact": "emergency_team_leader"
+      }
+    },
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 30.0,
+      "hold_seconds": 0.0,
+      "action": "none",
+      "metadata": {
+        "name": "Emergency Return",
+        "description": "Return to base for next mission"
+      }
+    },
+    {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "alt": 0.0,
+      "hold_seconds": 3.0,
+      "action": "land",
+      "metadata": {
+        "name": "Emergency Landing",
+        "description": "Mission complete - ready for next emergency"
+      }
+    }
+  ]
+}

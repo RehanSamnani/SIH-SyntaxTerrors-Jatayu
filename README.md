@@ -2,6 +2,8 @@
 
 This repository contains a Raspberry Pi 4–based companion system for a disaster-relief drone prototype. Start with Phase 0 to prepare the Pi safely and reproducibly.
 
+**🚀 [GETTING STARTED GUIDE](docs/GETTING_STARTED.md) - Complete setup and testing instructions for new users**
+
 Refer to `docs/prd.md` for the full product requirements and `docs/roadmap.md` for the implementation plan.
 
 ### Phase 0 — Preparation & Safety (before any code)
@@ -123,6 +125,28 @@ Quick test:
 bash scripts/setup_mqtt_broker.sh
 python src/telemetry_service.py --dry-run
 python scripts/monitor_telemetry.py
+```
+
+### Phase 3 — Mission Runner (Simulator-First)
+
+Goal: simulate missions (waypoints, ETA, state machine) to validate logic before flying.
+
+Deliverables:
+- Mission runner (`src/mission_runner.py`) with reactive state machine
+- Mission JSON format with waypoint definitions
+- Sample missions: disaster relief, aerial survey, emergency response
+- Obstacle handling with pause/resume logic
+- Delivery simulation with servo commands
+- Unit tests (`tests/test_mission_runner.py`)
+
+Docs:
+- Detailed: see `docs/phase3_mission_runner.md`
+- Quickstart: see `docs/phase3_quickstart.md`
+
+Quick test:
+```bash
+python src/mission_runner.py --dry-run
+mosquitto_sub -h localhost -p 1883 -t "drone/+/mission/status"
 ```
 
 

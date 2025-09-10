@@ -18,6 +18,7 @@ Check with: i2cdetect -y 1
 import json
 import logging
 import math
+import os
 import signal
 import sys
 import time
@@ -25,6 +26,7 @@ from pathlib import Path
 from typing import Tuple
 
 from smbus2 import SMBus  # type: ignore
+import paho.mqtt.client as mqtt  # type: ignore
 
 
 I2C_BUS = 1
@@ -34,12 +36,63 @@ PWR_MGMT_1 = 0x6B
 ACCEL_XOUT_H = 0x3B
 GYRO_XOUT_H = 0x43
 
+# MQTT Configuration
+DEVICE_ID = os.getenv("DEVICE_ID", "pi-drone-01")
+MQTT_HOST = os.getenv("MQTT_HOST", "localhost")
+MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
+MQTT_USERNAME = os.getenv("MQTT_USERNAME", "")
+MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
+MQTT_TLS_ENABLED = os.getenv("MQTT_TLS_ENABLED", "false").lower() == "true"
+MQTT_CA_CERT = os.getenv("MQTT_CA_CERT", "/etc/ssl/certs/ca-certificates.crt")
+MQTT_TOPIC = f"drone/{DEVICE_ID}/imu"
+
 LOG_PATH = Path("/home/pi/drone/telemetry/imu_log.jsonl")
 LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 
 def setup_logger() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+
+def build_mqtt_client() -> mqtt.Client:
+    """Create and configure MQTT client."""
+    client = mqtt.Client(client_id=f"imu-{DEVICE_ID}")
+    if MQTT_USERNAME:
+        client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+    if MQTT_TLS_ENABLED:
+        try:
+            client.tls_set(ca_certs=MQTT_CA_CERT)
+        except Exception:  # noqa: BLE001
+            logging.exception("Failed to set TLS; continuing without TLS")
+    return client
+
+
+def connect_mqtt_with_retries(client: mqtt.Client, retries: int = 10, backoff: float = 1.5) -> None:
+    """Connect to MQTT broker with retry logic."""
+    attempt = 0
+    while True:
+        try:
+            client.connect(MQTT_HOST, MQTT_PORT, keepalive=30)
+            logging.info("Connected to MQTT %s:%d", MQTT_HOST, MQTT_PORT)
+            return
+        except Exception as exc:  # noqa: BLE001
+            attempt += 1
+            if attempt > retries:
+                logging.exception("Failed to connect MQTT after %d attempts", retries)
+                raise
+            delay = min(10.0, backoff ** attempt)
+            logging.warning("MQTT connect failed (%s). Retry %d/%d in %.1fs", exc, attempt, retries, delay)
+            time.sleep(delay)
+
+
+def publish_mqtt_imu(client: mqtt.Client, sample: dict) -> None:
+    """Publish IMU data to MQTT."""
+    try:
+        payload = json.dumps(sample).encode("utf-8")
+        result = client.publish(MQTT_TOPIC, payload=payload, qos=1)
+        result.wait_for_publish(2.0)
+    except Exception:  # noqa: BLE001
+        logging.exception("Failed to publish MQTT message")
 
 
 class GracefulKiller:
@@ -103,6 +156,10 @@ def main() -> None:
     logging.info("Starting imu_reader (MPU-6050 at 0x%02X)", MPU_ADDRESS)
     killer = GracefulKiller()
 
+    # Setup MQTT client
+    mqtt_client = build_mqtt_client()
+    connect_mqtt_with_retries(mqtt_client)
+
     with SMBus(I2C_BUS) as bus:
         # Wake up device
         bus.write_byte_data(MPU_ADDRESS, PWR_MGMT_1, 0)
@@ -114,6 +171,8 @@ def main() -> None:
         rate_hz = 50.0
         interval = 1.0 / rate_hz
         next_log = 0.0
+        last_mqtt_publish = 0.0
+        mqtt_publish_interval = 0.1  # Publish to MQTT at 10 Hz
 
         with LOG_PATH.open("a", encoding="utf-8") as logf:
             while not killer.stop:
@@ -135,7 +194,15 @@ def main() -> None:
                         "gyro": {"x_dps": gx, "y_dps": gy, "z_dps": gz},
                         "est": {"pitch_deg": pitch, "roll_deg": roll},
                     }
+                    
+                    # Write to log file
                     logf.write(json.dumps(sample) + "\n")
+                    
+                    # Publish to MQTT at reduced rate
+                    if now - last_mqtt_publish >= mqtt_publish_interval:
+                        publish_mqtt_imu(mqtt_client, sample)
+                        last_mqtt_publish = now
+                    
                     if now >= next_log:
                         logging.info("pitch=%.2f roll=%.2f ax=%.2f ay=%.2f az=%.2f", pitch, roll, ax, ay, az)
                         next_log = now + 1.0
@@ -143,6 +210,12 @@ def main() -> None:
                     logging.exception("IMU read error; continuing")
                     time.sleep(0.05)
 
+    # Cleanup MQTT connection
+    try:
+        mqtt_client.disconnect()
+    except Exception:  # noqa: BLE001
+        pass
+    
     logging.info("imu_reader stopped")
 
 

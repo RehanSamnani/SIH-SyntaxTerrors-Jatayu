@@ -26,9 +26,23 @@ fi
 
 echo "[bootstrap] Done. Activate with: source .venv/bin/activate"
 
+# Create necessary directories
+echo "[bootstrap] Creating project directories..."
+mkdir -p /home/pi/drone/telemetry
+mkdir -p /home/pi/drone/logs
+mkdir -p models
 
-python3 src/sensors/gps_reader.py
-python3 src/sensors/imu_reader.py
-python3 src/vision/camera_stream.py --width 640 --height 480 --fps 15 --snapshot /home/pi/drone/telemetry/frame.jpg
-python3 src/actuators/servo_release.py arm
+# Set up environment file
+if [ ! -f .env ]; then
+    echo "[bootstrap] Creating .env file from template..."
+    cp env.example .env
+    echo "[bootstrap] Please edit .env file with your configuration"
+fi
+
+echo "[bootstrap] Bootstrap complete!"
+echo "[bootstrap] Next steps:"
+echo "  1. Edit .env file with your configuration"
+echo "  2. Run: source .venv/bin/activate"
+echo "  3. Test components individually"
+echo "  4. Install services: bash scripts/install_telemetry_service.sh --enable"
 

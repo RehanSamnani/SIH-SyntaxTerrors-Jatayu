@@ -35,7 +35,7 @@ def main() -> None:
     parser.add_argument("--max-pw", type=float, default=max_pw)
     args = parser.parse_args()
 
-    logging.info("Initializing servo on GPIO %d (min_pw=%.4f, max_pw=%.4f)", args.gpio, args["min_pw"] if isinstance(args, dict) and "min_pw" in args else args.min_pw, args["max_pw"] if isinstance(args, dict) and "max_pw" in args else args.max_pw)
+    logging.info("Initializing servo on GPIO %d (min_pw=%.4f, max_pw=%.4f)", args.gpio, args.min_pw, args.max_pw)
 
     try:
         servo = Servo(args.gpio, min_pulse_width=args.min_pw, max_pulse_width=args.max_pw)

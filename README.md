@@ -149,4 +149,42 @@ python src/mission_runner.py --dry-run
 mosquitto_sub -h localhost -p 1883 -t "drone/+/mission/status"
 ```
 
+### Phase 4 — Obstacle Detection & Basic Avoidance
+
+Goal: Build perception that detects hazards and triggers safe responses in the mission runner.
+
+Deliverables:
+- Lightweight obstacle detector (`src/vision/detector.py`) using TFLite MobileNet SSD
+- Real-time inference with frame resize and skipping for performance
+- MQTT obstacle events published to `drone/<id>/obstacles`
+- Heuristic distance estimation and severity classification
+- Integration with mission runner for pause/resume on obstacles
+
+Features:
+- TFLite MobileNet SSD inference on Pi Camera frames
+- Performance optimization: frame resize (300x300), frame skipping, top-k filtering
+- Obstacle events with bbox, confidence, distance estimate, and severity
+- Graceful shutdown and robust error handling
+- Comprehensive CLI configuration and environment variable support
+
+Docs:
+- Detailed: see `docs/phase4_obstacle_detection.md`
+- Quickstart: see `docs/phase4_quickstart.md`
+- Review: see `docs/features/3_REVIEW.md`
+
+Quick test:
+```bash
+# Start MQTT broker
+bash scripts/setup_mqtt_broker.sh
+
+# Run detector (requires TFLite model at models/mobilenet_ssd_v1.tflite)
+python src/vision/detector.py --drone_id pi01 --skip_frames 2
+
+# Monitor obstacle events
+mosquitto_sub -h localhost -p 1883 -t "drone/+/obstacles"
+
+# Test integration with mission runner
+python src/mission_runner.py --dry-run
+```
+
 

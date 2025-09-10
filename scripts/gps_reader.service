@@ -1,0 +1,50 @@
+[Unit]
+Description=GPS Reader Service
+Documentation=https://github.com/your-repo/sih-project
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/sih
+Environment=PYTHONPATH=/home/pi/sih/src
+Environment=DEVICE_ID=pi-drone-01
+Environment=GPS_SERIAL_PORT=/dev/serial0
+Environment=GPS_SERIAL_BAUD=9600
+Environment=MQTT_HOST=localhost
+Environment=MQTT_PORT=1883
+
+# Load MQTT credentials if available
+EnvironmentFile=-/home/pi/.env.mqtt
+
+# Python virtual environment
+ExecStart=/home/pi/sih/.venv/bin/python /home/pi/sih/src/sensors/gps_reader.py
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/pi/drone/telemetry
+
+# Resource limits
+LimitNOFILE=1024
+MemoryMax=128M
+CPUQuota=25%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gps-reader
+
+[Install]
+WantedBy=multi-user.target

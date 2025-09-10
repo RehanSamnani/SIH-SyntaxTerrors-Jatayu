@@ -269,6 +269,52 @@ mosquitto_sub -h localhost -p 1883 -t "drone/+/servo/command"
 5. **Manual Resume**: Mission resumes when resume command received
 6. **Obstacle Clearance**: Obstacle flag cleared on resume
 
+### Phase 4 Integration
+
+With Phase 4 obstacle detection implemented, the mission runner now receives real-time obstacle events from the TFLite detector:
+
+#### Obstacle Event Format
+```json
+{
+  "timestamp_ms": 1703123456789,
+  "drone_id": "pi01",
+  "event": "obstacle",
+  "label": "person",
+  "confidence": 0.85,
+  "bbox": {"x": 100, "y": 120, "w": 80, "h": 160},
+  "severity": "warning",
+  "distance_m": 8.5
+}
+```
+
+#### Response Thresholds
+- **Confidence Threshold**: 0.7 (configurable)
+- **Severity Levels**: 
+  - `critical`: Distance < 5m
+  - `warning`: Distance < 15m OR confidence ≥ 0.6
+  - `info`: All other detections
+
+#### Integration Flow
+1. **Detector** publishes obstacle events to `drone/<id>/obstacles`
+2. **Mission Runner** receives events and evaluates confidence
+3. **State Transition** to PAUSED if obstacle is significant
+4. **Recovery** when obstacle clears or confidence drops
+
+#### Testing Integration
+```bash
+# Start mission runner
+python src/mission_runner.py --dry-run
+
+# Start obstacle detector
+python src/vision/detector.py --drone_id pi01
+
+# Monitor obstacle events
+mosquitto_sub -h localhost -p 1883 -t "drone/+/obstacles" -v
+
+# Monitor mission status
+mosquitto_sub -h localhost -p 1883 -t "drone/+/mission/status" -v
+```
+
 ### Obstacle Avoidance Strategies
 - **Pause and Wait**: Simple pause until obstacle clears
 - **Altitude Change**: Future enhancement - change altitude to avoid obstacle

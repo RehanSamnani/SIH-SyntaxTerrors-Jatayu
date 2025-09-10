@@ -1,0 +1,57 @@
+[Unit]
+Description=Obstacle Detector Service
+Documentation=https://github.com/your-repo/sih-project
+After=network.target mosquitto.service
+Wants=mosquitto.service
+Requires=network.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/sih
+Environment=PYTHONPATH=/home/pi/sih/src
+Environment=DRONE_ID=pi-drone-01
+Environment=MQTT_HOST=localhost
+Environment=MQTT_PORT=1883
+Environment=MODEL_PATH=/home/pi/sih/models/mobilenet_ssd_v1.tflite
+Environment=CONF_THRESHOLD=0.5
+Environment=SKIP_FRAMES=2
+Environment=DIST_K=40.0
+Environment=CAM_W=640
+Environment=CAM_H=480
+Environment=MODEL_W=300
+Environment=MODEL_H=300
+
+# Load MQTT credentials if available
+EnvironmentFile=-/home/pi/.env.mqtt
+
+# Python virtual environment
+ExecStart=/home/pi/sih/.venv/bin/python /home/pi/sih/src/vision/detector.py
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/pi/drone/logs
+
+# Resource limits
+LimitNOFILE=1024
+MemoryMax=512M
+CPUQuota=75%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=obstacle-detector
+
+[Install]
+WantedBy=multi-user.target

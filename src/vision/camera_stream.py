@@ -80,6 +80,7 @@ def run_capture(width: int, height: int, fps: int, snapshot: Path | None) -> Non
         logging.info("camera_stream stopped")
 
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Pi Camera capture utility")
     parser.add_argument("--width", type=int, default=640)
@@ -97,5 +98,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
